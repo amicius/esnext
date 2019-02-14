@@ -88,12 +88,13 @@ lg(freeTrip.toString());
 
 class TripService {
 
+
     constructor() {
         // TODO Set of 3 trips
-        let trips = new Set();
-        trips.add(new Trip('paris', 'Paris', 'img/paris.jpg'));
-        trips.add(new Trip('nantes', 'Nantes', 'img/nantes.jpg'));
-        trips.add(new Trip('rio-de-janeiro', 'Rio de Janeiro', 'img/rio-de-janeiro.jpg'));
+        this.trips = new Set();
+        this.trips.add(new Trip('paris', 'Paris', 'img/paris.jpg'));
+        this.trips.add(new Trip('nantes', 'Nantes', 'img/nantes.jpg'));
+        this.trips.add(new Trip('rio-de-janeiro', 'Rio de Janeiro', 'img/rio-de-janeiro.jpg'));
 
 
     }
@@ -105,15 +106,13 @@ class TripService {
             setTimeout(() => {
                 // ici l'exécution du code est asynchrone
 
-                // if (!this.trips.has(tripName)) {
-                //     reject(`No trip with name ${tripName}`);
-                // }
-                this.trips.forEach(element => {
+
+                for (let element of this.trips) {
                     if (element.name === tripName) {
                         resolve(element);
                         return;
                     }
-                });
+                };
 
                 reject(`No trip with name ${tripName}`);
                 // TODO utiliser resolve et reject en fonction du résultat de la recherche
@@ -131,10 +130,10 @@ class PriceService {
         // 'paris' --> price = 100
         // 'rio-de-janeiro' --> price = 800)
         // no price for 'nantes'
-        let prices = new Map();
+        this.prices = new Map();
 
-        prices.set('paris', 100);
-        prices.set('rio-de-janeiro', 800);
+        this.prices.set('paris', 100);
+        this.prices.set('rio-de-janeiro', 800);
     }
 
     findPriceByTripId(tripId) {
@@ -146,7 +145,22 @@ class PriceService {
 
                 // TODO utiliser resolve et reject en fonction du résultat de la recherche
 
+                if (this.prices.has(tripId) == 1) {
+                    resolve(`Price found : ` + this.prices.get(tripId));
+                } else {
+                    reject(`No trip with id ${tripId}`)
+                }
+
             }, 2000)
         });
     }
 }
+
+const tripService = new TripService();
+const priceService = new PriceService();
+lg(tripService.findByName("Paris")
+    .then(function (element) { lg(element) }, function (error) { lg(error) }));
+lg(tripService.findByName("Toulouse")
+    .then(function (element) { lg(element) }, function (error) { lg(error) }));
+lg(tripService.findByName("Rio de Janeiro").then(function (element) { priceService.findPriceByTripId(element.id).then(function (price) { lg(price) }, function (error) { lg(error) }), function (error) { lg(error) } }));
+lg(tripService.findByName("Nantes").then(function (element) { priceService.findPriceByTripId(element.id).then(function (price) { lg(price) }, function (error) { lg(error) }), function (error) { lg(error) } }));
